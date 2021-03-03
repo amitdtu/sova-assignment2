@@ -1,0 +1,13 @@
+.cursor-pointer{
+  cursor: pointer;
+}
+
+.multiple-select-card{
+  position: relative;
+}
+
+.multiple-select-card .check-icon{
+  position: absolute;
+  top: 20%;
+  right: 7%;
+}
