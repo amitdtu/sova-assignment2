@@ -63,7 +63,9 @@
     validation: {
       required: true,
     },
-    children: {
+  }
+
+  const obj15 = {
       placeholder: '',
       label: 'ARE YOU PREGNANT?',
       type: 'select',
@@ -72,8 +74,28 @@
       validation: {
         required: true,
       },
-      dependOn: 'female'
-    }
+      dependOn: {
+        ques: obj14,
+        whichAns: obj14.options[1]
+      }
+  }
+  const obj16 = {
+      placeholder: '',
+      label: 'SURE?',
+      type: 'range',
+      name: 'pregnantSure',
+      min: 1,
+      max: 5,
+      minText: 'sure',
+      maxText: 'not sure',
+      defaultValue: 3,
+      validation: {
+        required: true,
+      },
+      dependOn: {
+        ques: obj15,
+        whichAns: obj15.options[0]
+      }
   }
 
 
@@ -180,10 +202,57 @@
     }
   }
 
-  const quesArray1 = [obj001, obj002, obj11, obj12, obj13, obj14]
+  const obj41 = {
+    placeholder: '',
+    label: 'Do you smoke?',
+    type: 'select',
+    name: 'isSmoke',
+    options: ['No', 'Yes', 'used to smoke earlier not anymore'],
+    validation: {
+      required: true,
+    }
+  }
+
+  const obj42 = {
+    placeholder: '',
+    label: 'HOW MANY CIGARETTES DO YOU SMOKE IN A DAY?',
+    type: 'range',
+    name: 'cigaretteCount',
+    min: 1,
+    max: 20,
+    minText: '1 or less',
+    maxText: '20 or more',
+    defaultValue: 3,
+    validation: {
+      required: true,
+    },
+    dependOn: {
+      ques: obj41,
+      whichAns: obj41.options[1]
+    }
+}
+
+  const obj43 = {
+    placeholder: '',
+    label: 'WHEN DID YOU QUIT SMOKING?',
+    type: 'select',
+    name: 'quitSmokeDate',
+    options: ['More than a year', 'Less than a year', 'Less than a month', 'Today :D'],
+    dependOn: {
+      ques: obj41,
+      whichAns: obj41.options[2]
+    },
+    validation: {
+      required: true,
+    }
+  }
+
+
+  const quesArray1 = [obj001, obj002, obj11, obj12, obj13, obj14, obj15, obj16]
   const quesArray2 = [obj21]
   const quesArray3 = [obj31, obj32, obj33, obj34, obj35, obj36, obj37 ]
+  const quesArray4 = [obj41, obj42, obj43]
 
-  const allPages = [quesArray1, quesArray2, quesArray3]
+  const allPages = [quesArray1, quesArray2, quesArray3, quesArray4]
 
   export default allPages

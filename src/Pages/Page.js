@@ -11,11 +11,13 @@ const Page = ({quesArray, ...props}) => {
     useEffect(() => {
         const answerObj = {}
         quesArray.forEach((ques) => {
-            if(ques.type === 'range'){
-                answerObj[ques.name] = {isValid: true, value: ques.defaultValue}
-            }
-            else {
-                answerObj[ques.name] = null
+            if(!ques.dependOn){
+                if(ques.type === 'range'){
+                    answerObj[ques.name] = {isValid: true, value: ques.defaultValue}
+                }
+                else {
+                    answerObj[ques.name] = null
+                }
             }
         } )
         setAnswerObj(answerObj)
@@ -26,16 +28,27 @@ const Page = ({quesArray, ...props}) => {
     
     const handleChange = (obj, val) => {
         const newAnswerObj = {...answerObj, [obj.name]: val}
-        if(obj.type === 'select' && obj.children){
-            if(newAnswerObj[obj.name]?.value !== obj.children.dependOn){
-                delete newAnswerObj[obj.children.name]
-            } else {
-                newAnswerObj[obj.children.name] = null
-            }
-        }
 
-        // if()
-    
+        // add or remove dynamic question
+        quesArray.forEach((ques, i) => {
+            // debugger
+            if(ques.dependOn ){
+                if(newAnswerObj && newAnswerObj[ques.dependOn.ques.name]?.value === ques.dependOn.whichAns){
+                    if(!newAnswerObj[ques.name]){
+                        if(ques.type === 'range'){
+                            newAnswerObj[ques.name] = {isValid: true, value: ques.defaultValue}
+                        } 
+                        else {
+                            newAnswerObj[ques.name] = null
+                        }
+                    }
+                } else {
+                    delete newAnswerObj[ques.name]
+                }
+            } 
+            
+        })
+
         let isFormValid = true
         for(let key in newAnswerObj){
           if(!newAnswerObj[key] || !newAnswerObj[key].value || !newAnswerObj[key].isValid){
@@ -52,25 +65,19 @@ const Page = ({quesArray, ...props}) => {
             <div className="row">
                 <div className="col-12 col-sm-6 offset-md-3">
                 {quesArray.map((ques, idx) =>{ 
+                    const isQuesVisible = (ques.dependOn && answerObj && answerObj[ques.dependOn.ques.name]?.value === ques.dependOn.whichAns) || !ques.dependOn
                     if(ques.type === 'number' || ques.type === 'text' || ques.type === 'email') {
-                        return <CustomInput key={idx} data={ques} onChange={(val) => handleChange(ques, val)} />
+                        return isQuesVisible ? <CustomInput key={idx} data={ques} onChange={(val) => handleChange(ques, val)} /> : null
                     } 
                     else if(ques.type === 'select'){
-                        const q1 = <SelectInput key={idx} data={ques} onChange={(val) => handleChange(ques, val)} />
-                        const Ques = [q1]
-
-                        if(ques.children && (answerObj && answerObj[ques.name]?.value === ques.children.dependOn)){
-                            const q2 = <SelectInput key={`${idx}-children`} data={ques.children} onChange={(val) => handleChange(ques.children, val)} />
-                            Ques.push(q2);
-                        }
-                        return Ques
-
+                        // debugger
+                        return  isQuesVisible ? <SelectInput key={`${idx}-children`} data={ques} onChange={(val) => handleChange(ques, val)} /> : null
                     } 
                     else if(ques.type === 'multiple'){
-                        return <MultipleSelect key={idx} data={ques} onChange={(val) => handleChange(ques, val)} />
+                        return isQuesVisible ? <MultipleSelect key={idx} data={ques} onChange={(val) => handleChange(ques, val)} /> : null
                     } 
                     else if(ques.type === 'range') {
-                        return <RangeInput key={idx} data={ques} onChange={(val) => handleChange(ques, val)} />
+                        return isQuesVisible ? <RangeInput key={idx} data={ques} onChange={(val) => handleChange(ques, val)} /> : null
                     }
                 })}
                 <button onClick={() => props.isCompleted(answerObj)} disabled={!isFormValid} type="button" className="btn btn-primary">Next</button>
